@@ -1,0 +1,28 @@
+CPP = g++
+TINY_STM_ROOT_DIR = ../tinySTM
+
+TINY_STM_BIN_DIR = ${TINY_STM_ROOT_DIR}/lib
+
+TINY_STM_INC_DIR = ${TINY_STM_ROOT_DIR}/include
+ 
+SRC_DIR = ./src
+
+TARGET_DIR = ./target
+OBJ_DIR = ./target/obj
+
+LDFLAGS = -lrt -lpthread -L$(TINY_STM_BIN_DIR) -lstm
+
+CPPFLAGS = -DSTM -DX86 -DLINUX -D_REENTRANT -DNDEBUG -O3 -I$(TINY_STM_INC_DIR)
+
+########################################
+# set the build profile (default=debug)
+CPPFLAGS_normal  =  -ggdb -O3
+CPPFLAGS_fast    =  -DNDEBUG -O3
+CPPFLAGS_debug   =  -ggdb -O0
+CPPFLAGS_gp0     =  -ggdb -pg -O0
+CPPFLAGS_gp      =  -ggdb -pg -O3
+ifeq ($(PROFILE), )
+    PROFILE = normal
+endif
+CPPFLAGS += $(CPPFLAGS_${PROFILE})
+
