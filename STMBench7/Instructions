@@ -1,0 +1,51 @@
+**********************************
+*                                *
+*   STMBench7 with TL2/TinySTM   *
+*                                *
+**********************************
+
+STMBench7 TinySTM/TL2 version requires TL2 and TinySTM STM libraries.
+
+It was tested with 0.7.1 version of TinySTM and 0.9.2 TL2 version
+from x86 STAMP distributions.
+
+TinySTM can be downloaded from http://tinystm.org/.
+TL2 x86 can be downloaded from http://stamp.stanford.edu/.
+
+To build the library perform the following steps:
+
+1) Change Makefile.in be according to local configuration.
+
+2) Run make with appropriate flags.
+	a) To build TL2 version run 'make STM=tl2'
+	b) To build TinySTM version run 'make STM=tinySTM'
+
+As a result, STMBench7 executable will be created.
+
+3) Run the benchmark:
+
+Running the executable with argument --help or -h will print usage explanation.
+
+Command line parameters for rstm version are:
+        --help (-?) - prints help
+        --fileName (-f) <file_name> - sets options file name
+        --readOnlyPercent (-p) <number> - set percent of read-only operations
+        --workloadType (-w) r|rw|w - set workload type
+        --traversals (-t) true|false - enable/disable long traversals
+        --structuralModifications (-m) true|false - enable/disable structural modifications
+        --threadNum (-n) <number> - set number of simultaneous threads 
+        --size (-s) s|m|b - set size of data structure
+		--initSingleTx (-i) true|false - whether initialization should be done in a single or in multiple transactions
+			IMPORTANT NOTE: set this to false for TL2 version of benchmark
+
+Example usage:
+
+		./sb7_tt -s b -n 5 -w r -d 20000 -t false -i false
+
+It will run sb7_tt on a big data structure, with five concurrent threads, running a
+read only workload for 20 seconds and without long transactions. Initialization is
+done in multiple transactions.
+
+
+Aleksandar Dragojevic (aleksandar.dragojevic@epfl.ch)
+
