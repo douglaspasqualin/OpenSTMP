@@ -21,4 +21,4 @@ $(OBJ_DIR)/lee.o: $(SRC_DIR)/lee.cc
 
 # general
 clean:
-	rm -r $(TARGET_DIR)
+	rm -rf $(TARGET_DIR)
