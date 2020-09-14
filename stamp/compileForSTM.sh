@@ -13,7 +13,7 @@ do
 
 cd ${dir}
 make -f Makefile.stm clean
-make -f Makefile.stm.otm
+make -f Makefile.stm
 cd ..
 
 done
