@@ -401,10 +401,12 @@
 #    ifdef OTM
 
 #      include <omp.h>
-#      include "tl2.h"
+//#      include "tl2.h"
 
-#      define TM_STARTUP(numThread)     STM_STARTUP()
-#      define TM_SHUTDOWN()             STM_SHUTDOWN()
+//#      define TM_STARTUP(numThread)     STM_STARTUP()
+//#      define TM_SHUTDOWN()             STM_SHUTDOWN()
+#      define TM_STARTUP(numThread)     /* nothing */
+#      define TM_SHUTDOWN()             /* nothing */
 
 #      define TM_THREAD_ENTER()         /* nothing */
 #      define TM_THREAD_EXIT()          /* nothing */
