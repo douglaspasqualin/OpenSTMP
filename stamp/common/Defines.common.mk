@@ -14,9 +14,6 @@ CPPFLAGS += $(CFLAGS)
 LD       := g++
 LIBS     += -lpthread
 
-#For openmp
-#CFLAGS   += -fopenmp
-
 # Remove these files when doing clean
 OUTPUT +=
 

@@ -8,33 +8,39 @@ if [ $# -gt 3 ]; then
     exp=$1
     shift
 else
-    echo "stamp-test.sh log-file (seq | stm) (sim | real) nb-threads..."
+    echo "stamp-test.sh log-file (seq | stm | stm.otm) (sim | real) nb-threads..."
     exit
 fi
 
-for dir in \
-    bayes \
-    genome \
-    intruder \
-    kmeans \
-    labyrinth \
-    ssca2 \
-    vacation \
-    yada
-do
+#Compiling will be done outside
 
-cd ${dir}
-make -f Makefile.${suffix} clean
-make -f Makefile.${suffix}
-cd ..
+#for dir in \
+#    bayes \
+#    genome \
+#    intruder \
+#    kmeans \
+#    labyrinth \
+#    ssca2 \
+#    vacation \
+#    yada
+#do
 
-done
+#cd ${dir}
+#make -f Makefile.${suffix} clean
+#make -f Makefile.${suffix}
+#cd ..
+
+#done
 
 while [ $# -gt 0 ]
 do
 
 threads=$1
 shift
+
+#To show aborts and commits
+
+export STM_STATS=1;\
 
 if [ "${exp}" = "sim" ]; then
 
@@ -77,17 +83,6 @@ echo "Executing: ${test} ${threads}" | tee -a ${log}
 exec $test $threads | tee -a ${log}
 
 done
-
-for test in \
-    "./redblacktree/redblacktree -u 20 "  \
-    "./hashmap/hashmap -u 20"
-do
-
-echo "Executing: $test -i 1000000 -d 500000000 -n $threads" | tee -a ${log}
-exec $test -i 1000000 -d 500000000 -n $threads | tee -a ${log}
-
-done
-
 
 fi
 

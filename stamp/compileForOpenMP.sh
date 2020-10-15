@@ -12,8 +12,9 @@ for dir in \
 do
 
 cd ${dir}
-make -f Makefile.stm clean
-make -f Makefile.stm
+make -f Makefile.stm.otm clean
+make -f Makefile.stm.otm
 cd ..
 
 done
+

@@ -10,14 +10,10 @@
 # ==============================================================================
 
 CFLAGS   += -DSTM -I$(STM)/include
+CPPFLAGS := $(CFLAGS)
 LDFLAGS  += -L$(STM)/lib
 LIBS     += -lstm
 
-#For openMP
-#CFLAGS   += -DOTM
-#LIBS     += -fopenmp
-
-CPPFLAGS := $(CFLAGS)
 
 # ==============================================================================
 # Rules

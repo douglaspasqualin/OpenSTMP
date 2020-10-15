@@ -343,7 +343,7 @@
 #    define TM_ARG_ALONE                  /* nothing */
 #    define TM_ARGDECL                    /* nothing */
 #    define TM_ARGDECL_ALONE              /* nothing */
-#    define TM_CALLABLE                   _Pragma ("omp tm_function")
+#    define TM_CALLABLE                   /* nothing */
 
 #    define thread_getId()                omp_get_thread_num()
 #    define thread_getNumThread()         omp_get_num_threads()
@@ -401,21 +401,37 @@
 #    ifdef OTM
 
 #      include <omp.h>
-//#      include "tl2.h"
+#      include <mod_mem.h>
+#      include <mod_stats.h>
 
-//#      define TM_STARTUP(numThread)     STM_STARTUP()
-//#      define TM_SHUTDOWN()             STM_SHUTDOWN()
-#      define TM_STARTUP(numThread)     /* nothing */
-#      define TM_SHUTDOWN()             /* nothing */
+#      define TM_STARTUP(numThread)     if (sizeof(long) != sizeof(void *)) { \
+                                          fprintf(stderr, "Error: unsupported long and pointer sizes\n"); \
+                                          exit(1); \
+                                        } \
+                                        stm_init(); \
+                                        mod_mem_init(0); \
+                                        if (getenv("STM_STATS") != NULL) { \
+                                          mod_stats_init(); \
+                                        }
+#      define TM_SHUTDOWN()             if (getenv("STM_STATS") != NULL) { \
+                                          unsigned long u; \
+                                          if (stm_get_global_stats("global_nb_commits", &u) != 0) \
+                                            printf("#commits    : %lu\n", u); \
+                                          if (stm_get_global_stats("global_nb_aborts", &u) != 0) \
+                                            printf("#aborts     : %lu\n", u); \
+                                          if (stm_get_global_stats("global_max_retries", &u) != 0) \
+                                            printf("Max retries : %lu\n", u); \
+                                        } \
+                                        stm_exit()
 
-#      define TM_THREAD_ENTER()         /* nothing */
-#      define TM_THREAD_EXIT()          /* nothing */
+#      define TM_THREAD_ENTER()         stm_init_thread()
+#      define TM_THREAD_EXIT()          stm_exit_thread()
 #      define thread_barrier_wait();    _Pragma ("omp barrier")
 
 #      define P_MALLOC(size)            malloc(size)
 #      define P_FREE(ptr)               free(ptr)
-#      define TM_MALLOC(size)           malloc(size)
-#      define TM_FREE(ptr)              /* TODO: fix memory free problem with OpenTM */
+#      define TM_MALLOC(size)           stm_malloc(size)
+#      define TM_FREE(ptr)              stm_free(ptr, sizeof(stm_word_t))
 
 #    else /* !OTM */
 
@@ -456,10 +472,20 @@
 
 #  ifdef OTM
 
-#    define TM_BEGIN()                  _Pragma ("omp transaction") {
-#    define TM_BEGIN_RO()               _Pragma ("omp transaction") {
-#    define TM_END()                    }
-#    define TM_RESTART()                omp_abort()
+#    define TM_START(ro)                do { \
+                                            stm_tx_attr_t _a = {{.read_only = ro}}; \
+                                            sigjmp_buf *_e = stm_start(_a); \
+                                            if (_e != NULL) sigsetjmp(*_e, 0); \
+                                        } while (0)
+
+#    define TM_BEGIN()                  _Pragma ("omp singlee") { \
+                                        TM_START(0);     
+#    define TM_BEGIN_RO()               _Pragma ("omp singlee") { \
+                                        TM_START(1);
+
+#    define TM_END()                    stm_commit(); \
+                                        }
+#    define TM_RESTART()                stm_abort(0)
 
 #    define TM_EARLY_RELEASE(var)       /* nothing */
 
@@ -543,13 +569,15 @@
 
 #if defined(OTM)
 
-#  define TM_SHARED_READ(var)           (var)
-#  define TM_SHARED_READ_P(var)         (var)
-#  define TM_SHARED_READ_F(var)         (var)
+#  include <wrappers.h>
 
-#  define TM_SHARED_WRITE(var, val)     ({var = val; var;})
-#  define TM_SHARED_WRITE_P(var, val)   ({var = val; var;})
-#  define TM_SHARED_WRITE_F(var, val)   ({var = val; var;})
+#  define TM_SHARED_READ(var)           stm_load((volatile stm_word_t *)(void *)&(var))
+#  define TM_SHARED_READ_P(var)         stm_load_ptr((volatile void **)(void *)&(var))
+#  define TM_SHARED_READ_F(var)         stm_load_float((volatile float *)(void *)&(var))
+
+#  define TM_SHARED_WRITE(var, val)     stm_store((volatile stm_word_t *)(void *)&(var), (stm_word_t)val)
+#  define TM_SHARED_WRITE_P(var, val)   stm_store_ptr((volatile void **)(void *)&(var), val)
+#  define TM_SHARED_WRITE_F(var, val)   stm_store_float((volatile float *)(void *)&(var), val)
 
 #  define TM_LOCAL_WRITE(var, val)      ({var = val; var;})
 #  define TM_LOCAL_WRITE_P(var, val)    ({var = val; var;})
