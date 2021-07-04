@@ -9,12 +9,22 @@
 # Variables
 # ==============================================================================
 
+
+CFLAGS   += -DVANILLA
+
+#Descomentar as 3 linhas abaixo para usar a TinySTM
+CFLAGS   += -DVANILLA_TINY
+STM := ../../tinySTM
+LIBS     += -lstm
+
+#Descomentar as 3 linhas abaixo para usar a SwissSTM
+#CFLAGS   += -DVANILLA_SWISS
+#STM := ../../SwissTM
+#LIBS     += -lwlpdstm
+
 CFLAGS   += -DSTM -I$(STM)/include
 CPPFLAGS := $(CFLAGS)
 LDFLAGS  += -L$(STM)/lib
-LIBS     += -lstm
-
-CFLAGS   += -DVANILLA
 
 
 # ==============================================================================

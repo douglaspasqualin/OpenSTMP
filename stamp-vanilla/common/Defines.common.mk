@@ -18,9 +18,6 @@ LIBS     += -lpthread
 OUTPUT +=
 
 LIB := ../lib
-
-STM := ../../tinySTM
-
 LOSTM := ../../OpenTM/lostm
 
 
