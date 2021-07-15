@@ -448,11 +448,14 @@ ifeq ($(ENABLE_PERFORMANCE_COUNTING), yes)
 	endif
 endif
 
+#atomic operator path
+ATOMIC_OPS_DIR = $(SRC_DIR)/common/atomic_ops
+CPPFLAGS += -I$(ATOMIC_OPS_DIR)
 
 ########################################
 # define mubench flags
-MUBENCH_CPPFLAGS += $(COMMON_CPPFLAGS) -DMUBENCH_WLPDSTM
-MUBENCH_CPPFLAGS += -I$(INCLUDE_DIR)
+MUBENCH_CPPFLAGS += $(COMMON_CPPFLAGS) -DMUBENCH_WLPDSTM 
+MUBENCH_CPPFLAGS += -I$(INCLUDE_DIR) -I$(ATOMIC_OPS_DIR)
 MUBENCH_LDFLAGS  += $(COMMON_LDFLAGS)
 MUBENCH_LDFLAGS  += -L$(LIB_DIR) -lwlpdstm
 
