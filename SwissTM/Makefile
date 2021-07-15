@@ -84,7 +84,7 @@ $(LIB_DIR)/libwlpdstm.a: $(LIB_DIR_TS) $(OBJFILES)
 #$(OBJ_DIR)/wlpdstm.o: $(OBJ_DIR) $(STM_API_DIR)/wlpdstm.cc $(STM_API_DIR)/wlpdstm.h
 #	$(CPP) $(CPPFLAGS) $(STM_API_DIR)/wlpdstm.cc -c -o $@
 
-$(OBJ_DIR)/wlpdstm.o: $(OBJ_DIR_TS) $(STM_API_DIR)/wlpdstm.cc $(STM_API_DIR)/wlpdstm.h
+$(OBJ_DIR)/wlpdstm.o: $(OBJ_DIR_TS) $(STM_API_DIR)/wlpdstm.cc $(STM_API_DIR)/wlpdstm.h $(STM_API_DIR)/atomic.h 
 	$(CPP) $(CPPFLAGS) $(STM_API_DIR)/wlpdstm.cc -c -o $@
 
 ifeq ($(STM), swisstm)
